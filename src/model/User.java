@@ -5,7 +5,7 @@ import java.util.List;
 public class User {
 	private int id;
 	private String name;
-	private String gender;
+	private Character gender;
 	private String email;
 	private List<Post> posts;
 	
@@ -21,11 +21,11 @@ public class User {
 		this.name = name;
 	}
 
-	public String getGender() {
+	public Character getGender() {
 		return gender;
 	}
 
-	public void setGender(String gender) {
+	public void setGender(Character gender) {
 		this.gender = gender;
 	}
 

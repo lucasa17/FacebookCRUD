@@ -11,4 +11,5 @@ public interface PostDAO {
 	void update(Post post) throws ModelException;
 	void delete(Post post) throws ModelException;
 	List<Post> findAll() throws ModelException;
+	List<Post> findByUserId(int userId) throws ModelException;
 } 
