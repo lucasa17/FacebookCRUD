@@ -9,18 +9,21 @@ public class Post {
 	private User user;
 	
 	public Post(int id) {
-		this.id = id;
+		this.id = id; 
 	}
 	
 	public String getContent() {
 		return content;
 	}
+	
 	public void setContent(String content) {
 		this.content = content;
 	}
+	
 	public Date getDate() {
 		return date;
 	}
+	
 	public void setDate(Date date) {
 		this.date = date;
 	}
@@ -28,7 +31,7 @@ public class Post {
 	public int getId() {
 		return id;
 	}
-	
+
 	public User getUser() {
 		return user;
 	}
@@ -37,4 +40,13 @@ public class Post {
 		this.user = user;
 	}
 	
+	public void validate() {;
+		if (content == null || content.isBlank()) {
+			throw new IllegalArgumentException("Conteúdo do Post não pode ser vazio");
+		}
+		
+		if (user == null || user.getId() > 0){
+			throw new IllegalArgumentException("Usuário inválido");
+		}
+	}
 }

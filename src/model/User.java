@@ -5,7 +5,7 @@ import java.util.List;
 public class User {
 	private int id;
 	private String name;
-	private Character gender;
+	private UserGender gender;
 	private String email;
 	private List<Post> posts;
 	
@@ -21,14 +21,10 @@ public class User {
 		this.name = name;
 	}
 
-	public Character getGender() {
+	public UserGender getGender() {
 		return gender;
 	}
-
-	public void setGender(Character gender) {
-		this.gender = gender;
-	}
-
+	
 	public String getEmail() {
 		return email;
 	}
@@ -49,5 +45,17 @@ public class User {
 		return id;
 	}
 	
-	
+	public void validate() {
+		if(name == null || name.isBlank()) {
+			throw new IllegalArgumentException("O nome do usuário não pode ser vazio");
+		}
+		
+		if(gender == null) {
+			throw new IllegalArgumentException("O gênero do usuário não pode ser vazio");
+		}
+		
+		if(email == null || email.isBlank()) {
+			throw new IllegalArgumentException("O email do usuário não pode ser vazio");	
+		}
+	}
 }

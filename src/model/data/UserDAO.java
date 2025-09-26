@@ -10,5 +10,4 @@ public interface UserDAO {
 	void update(User user) throws ModelException;
 	void delete(User user) throws ModelException;
 	List<User> findAll() throws ModelException;
-
 }

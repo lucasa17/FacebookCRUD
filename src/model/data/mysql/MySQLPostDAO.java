@@ -12,34 +12,34 @@ import java.util.List;
 import model.ModelException;
 import model.Post;
 import model.User;
+import model.data.DAOUtils;
 import model.data.PostDAO;
-import model.data.mysql.utils.DAOUtils;
 import model.data.mysql.utils.MySQLConnectionFactory;
 
 public class MySQLPostDAO implements PostDAO {
 
 	@Override
-	public void save(Post post) throws ModelException {
+	public void save(Post post) throws ModelException {	
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
 
 		try {
 			connection = MySQLConnectionFactory.getConnection();
-			
-			String sqlIsert = " INSERT INTO posts "
-					+ " VALUES (DEFAULT, ?, CURDATE(), ?); ";
-			
+
+			String sqlIsert = " INSERT INTO posts " + 
+			                  " VALUES (DEFAULT, ?, CURDATE(), ?); ";
+
 			preparedStatement = connection.prepareStatement(sqlIsert);
 			preparedStatement.setString(1, post.getContent());
 			preparedStatement.setInt(2, post.getUser().getId());
-			
+
 			preparedStatement.executeUpdate();
-			
+
 		} catch (SQLException sqle) {
-			DAOUtils.sqlExceptionTreatment("Erro ao inserir post" ,sqle);
+			DAOUtils.sqlExceptionTreatement("Erro ao inserir post do BD.", sqle);
 		} catch (ModelException me) {
 			throw me;
-		}
+		} 
 		finally {
 			DAOUtils.close(preparedStatement);
 			DAOUtils.close(connection);
@@ -47,10 +47,10 @@ public class MySQLPostDAO implements PostDAO {
 	}
 
 	@Override
-	public void update(Post post) throws ModelException{
+	public void update(Post post) throws ModelException {
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
-
+		
 		try {
 			connection = MySQLConnectionFactory.getConnection();
 			
@@ -63,12 +63,13 @@ public class MySQLPostDAO implements PostDAO {
 			preparedStatement = connection.prepareStatement(sqlUpdate);
 			preparedStatement.setString(1, post.getContent());
 			preparedStatement.setInt(2, post.getId());
-			preparedStatement.executeUpdate();
 			
+			preparedStatement.executeUpdate();
 		} catch (SQLException sqle) {
-			DAOUtils.sqlExceptionTreatment("Erro ao atualizar" ,sqle);
-		}
-		finally {
+			DAOUtils.sqlExceptionTreatement("Erro ao atualizar post do BD.", sqle);
+		} catch (ModelException me) {
+			throw me;
+		} finally {
 			DAOUtils.close(preparedStatement);
 			DAOUtils.close(connection);
 		}
@@ -80,15 +81,16 @@ public class MySQLPostDAO implements PostDAO {
 		PreparedStatement preparedStatement = null;
 
 		try {
-			connection = MySQLConnectionFactory.getConnection();
+			connection = MySQLConnectionFactory.getConnection();  
 
 			String sqlDelete = "delete from posts where id = ?;";
 
 			preparedStatement = connection.prepareStatement(sqlDelete);
 			preparedStatement.setInt(1, post.getId());
+
 			preparedStatement.executeUpdate();
 		} catch (SQLException sqle) {
-			DAOUtils.sqlExceptionTreatment("Erro ao deletar post" ,sqle);
+			DAOUtils.sqlExceptionTreatement("Erro ao excluir post do BD.", sqle);
 		} finally {
 			DAOUtils.close(preparedStatement);
 			DAOUtils.close(connection);
@@ -101,69 +103,74 @@ public class MySQLPostDAO implements PostDAO {
 		Statement statement = null;
 		ResultSet rs = null;
 		List<Post> postsList = new ArrayList<>();
-	
+
 		try {
 			connection = MySQLConnectionFactory.getConnection();
 
-	
 			statement = connection.createStatement();
-			String sqlSeletc = " select * from posts ";
-	
+			String sqlSeletc = " SELECT * FROM posts; ";
+
 			rs = statement.executeQuery(sqlSeletc);
-	
+
 			setUpUsers(rs, postsList);
-	
-		} catch (SQLException sqle) {	
-			DAOUtils.sqlExceptionTreatment("Erro ao selecionar posts" ,sqle);
+
+		} catch (SQLException sqle) {
+			DAOUtils.sqlExceptionTreatement("Erro ao carregar posts do BD.", sqle);
 		} finally {
 			DAOUtils.close(rs);
 			DAOUtils.close(statement);
 			DAOUtils.close(connection);
 		}
+
 		return postsList;
 	}
-	
+
 	@Override
 	public List<Post> findByUserId(int userId) throws ModelException {
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
 		ResultSet rs = null;
 		List<Post> postsList = new ArrayList<>();
-	
+
 		try {
 			connection = MySQLConnectionFactory.getConnection();
 
-			String sqlSeletc = " select * from posts where user_id = ?";
-	
+			String sqlSeletc = " SELECT * FROM posts WHERE user_id = ?; ";
 			preparedStatement = connection.prepareStatement(sqlSeletc);
 			preparedStatement.setInt(1, userId);
-			
-			rs = preparedStatement.executeQuery();	
-			
+
+			rs = preparedStatement.executeQuery();
+
 			setUpUsers(rs, postsList);
-	
-		} catch (SQLException sqle) {	
-			DAOUtils.sqlExceptionTreatment("Erro ao selecionar posts" ,sqle);
+
+		} catch (SQLException sqle) {
+			DAOUtils.sqlExceptionTreatement("Erro ao carregar posts do BD.", sqle);
 		} finally {
 			DAOUtils.close(rs);
 			DAOUtils.close(preparedStatement);
 			DAOUtils.close(connection);
 		}
+
 		return postsList;
 	}
-	
-	private void setUpUsers(ResultSet rs, List<Post> postsList) throws SQLException{
+
+	private void setUpUsers(ResultSet rs, List<Post> postsList) 
+			throws SQLException {
+		
 		while (rs.next()) {
-			int postId = rs.getInt("id");
+			int postId = rs.getInt("id"); 
 			String postContent = rs.getString("content");
 			Date postDate = rs.getDate("post_date");
-			int userIdRs = rs.getInt("user_id");
+			int userId = rs.getInt("user_id");
 
 			Post newPost = new Post(postId);
 			newPost.setContent(postContent);
 			newPost.setDate(postDate);
 			
-			User postUser = new User(userIdRs);
+			User postUser = new User(userId);
+
+			// TODO buscar dados do usuário dono do post.
+			postUser.setName("Colocar nome");
 			newPost.setUser(postUser);
 			
 			postsList.add(newPost);

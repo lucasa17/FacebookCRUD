@@ -1,6 +1,5 @@
 package model.data;
 
-import java.sql.SQLException;
 import java.util.List;
 
 import model.ModelException;
@@ -12,4 +11,4 @@ public interface PostDAO {
 	void delete(Post post) throws ModelException;
 	List<Post> findAll() throws ModelException;
 	List<Post> findByUserId(int userId) throws ModelException;
-} 
+}
